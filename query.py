@@ -1,37 +1,19 @@
-import sqlite3 as sq
+import sqlite3
 
-class Data:
-    def __init__(self):
-        self.func = {
-            'ins': self.ins
-        }
-    def connect(self, func, data=[]):
-        self.db = sq.connect('testdb.db')
-        self.cur = self.db.cursor()
-        self.data = data
-        try:
-            ret = self.func[func]()
-        except Exception as err:
-            ret = f"Произошёл error {err}"
-        self.cur.close()
-        self.db.close()
-        return ret
-    def ins(self):
-        q = 'INSERT INTO logpw (login) VALUES (?)'
-        try:
-            self.cur.execute(q, self.data)
-        except Exception as err:
-            return err
-        self.db.commit()
-        return 'Изменения внесены'
-    def login(self, data):
-        q = "SELECT id FROM logpw WHERE login=? AND password=?"
-        try:
-             self.cur.execute(q , data)
-        except Exception as err:
-            return[0, err]
-        else:
-            q_data = self.cur.fetchall()
-            if not q_data:
-                return [0, 'Нет пользователя | неверный пароль']
-            return [1, q_data]
+def insert(data):
+    try:
+        sqlite_connection = sqlite3.connect('testdb.db')
+        cursor = sqlite_connection.cursor()
+        print("Подключен к БД")
+        sqlite_insert_query = data
+        count = cursor.execute(sqlite_insert_query)
+        sqlite_connection.commit()
+        print("Запись успешно вставлена ​​в таблицу testdb ", cursor.rowcount)
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Ошибка при работе с БД", error)
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с БД закрыто")
