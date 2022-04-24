@@ -83,8 +83,7 @@ submit_button = ttk.Button(tab1, text="Submit",
     command=lambda:q.insert(f"""INSERT INTO logpw (id, name, login, password) VALUES ('{id()}', '{name.get()}', '{login.get()}', '{password.get()}');"""))
 submit_button.place(relx=.5, rely=.5, anchor="c")
 
-submit_button = ttk.Button(reg, text="Submit", 
-    command=lambda:q.insert(f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
-submit_button.place(relx=.5, rely=.5, anchor="c")
+reg_submit_button = ttk.Button(reg, text="Submit", command=lambda: q.check(reg_login.get(), f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
+reg_submit_button.place(relx=.5, rely=.5, anchor="c")
 
 window.mainloop()
