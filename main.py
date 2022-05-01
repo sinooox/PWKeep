@@ -12,6 +12,7 @@ tabControl = ttk.Notebook(window)
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 reg = ttk.Frame(tabControl)
+auth = ttk.Frame(tabControl)
 
 def update():
     window.destroy()
@@ -38,10 +39,20 @@ ttk.Label(tab1, text="Enter Name").grid(row=0, column=0, sticky='W', pady=35)
 ttk.Label(tab1, text="Enter Login").grid(row=1, column=0, sticky='W', pady=0)
 ttk.Label(tab1, text="Enter Password").grid(row=2, column=0, sticky='W', pady=25)
 
+tabControl.add(auth, text='Auth')
 tabControl.add(reg, text='Register')
 tabControl.add(tab1, text='Enter')
 tabControl.add(tab2, text='Saved')
 tabControl.pack(expand=1, fill="both")
+
+auth_login = tk.StringVar()
+auth_password = tk.StringVar()
+
+auth_login = ttk.Entry(auth)
+auth_login.place(relx=.5, rely=.1, anchor="c")
+
+auth_password = ttk.Entry(auth, show='*')
+auth_password.place(relx=.5, rely=.2, anchor="c")
 
 reg_login = tk.StringVar()
 reg_password = tk.StringVar()
@@ -85,5 +96,8 @@ submit_button.place(relx=.5, rely=.5, anchor="c")
 
 reg_submit_button = ttk.Button(reg, text="Submit", command=lambda: q.check(reg_login.get(), f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
 reg_submit_button.place(relx=.5, rely=.5, anchor="c")
+
+auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: q.auth(auth_login.get(), auth_password.get()))
+auth_submit_button.place(relx=.5, rely=.5, anchor="c")
 
 window.mainloop()
