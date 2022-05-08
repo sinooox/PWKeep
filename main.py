@@ -24,13 +24,13 @@ l.pack(anchor='w')
 scrollbar = ttk.Scrollbar(window)
 scrollbar.pack(side='right', fill='y')
 
-listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
+#listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
 
-lst = q.out()
-for i in lst:
-    listbox.insert("end", i)
-listbox.pack(expand=True, fill="both")
-scrollbar.config(command=listbox.yview)
+#lst = q.out()
+#for i in lst:
+#    listbox.insert("end", i)
+#listbox.pack(expand=True, fill="both")
+#scrollbar.config(command=listbox.yview)
 
 refresh_button = ttk.Button(tab2, text="Refresh", command=lambda: update())
 refresh_button.pack(anchor='s')
@@ -81,7 +81,7 @@ password = ttk.Entry(tab1, show='*')
 password.place(relx=.5, rely=.3, anchor="c")
 
 def id():
-    prev_id = [q.out()][-1][-1]
+    prev_id = [q.out("""SELECT * from logpw""")][-1][-1]
     new_id = int(prev_id[0]) + 1
     return new_id
 
@@ -90,6 +90,25 @@ def reg_id():
     new_id = int(prev_id[0]) + 1
     return new_id
 
+def auth1(login, passw):
+    is_authorized = False
+
+    if is_authorized:
+        return None
+    else:
+        if q.auth(login, passw):
+            is_authorized = True
+
+            listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
+            lst = q.out(f"""SELECT name, login, password FROM logpw WHERE added_by='{login}'""")
+            print(lst)
+            for i in lst:
+                listbox.insert("end", i)
+            listbox.pack(expand=True, fill="both")
+            scrollbar.config(command=listbox.yview)
+        else:
+            print('Неверный логин или пароль')
+
 submit_button = ttk.Button(tab1, text="Submit", 
     command=lambda:q.insert(f"""INSERT INTO logpw (id, name, login, password) VALUES ('{id()}', '{name.get()}', '{login.get()}', '{password.get()}');"""))
 submit_button.place(relx=.5, rely=.5, anchor="c")
@@ -97,7 +116,7 @@ submit_button.place(relx=.5, rely=.5, anchor="c")
 reg_submit_button = ttk.Button(reg, text="Submit", command=lambda: q.check(reg_login.get(), f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
 reg_submit_button.place(relx=.5, rely=.5, anchor="c")
 
-auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: q.auth(auth_login.get(), auth_password.get()))
+auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: auth1(auth_login.get(), auth_password.get()))
 auth_submit_button.place(relx=.5, rely=.5, anchor="c")
 
 window.mainloop()

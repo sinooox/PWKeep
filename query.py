@@ -18,12 +18,12 @@ def insert(data):
             sqlite_connection.close()
             print("INS: Соединение с БД закрыто")
 
-def out():
+def out(query):
     try:
         sqlite_connection = sqlite3.connect('testdb.db')
         cursor = sqlite_connection.cursor()
         print("OUT: Подключен к БД")
-        sqlite_select_query = """SELECT * from logpw"""
+        sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
         cursor.close()
@@ -112,7 +112,8 @@ def auth(login, password):
             if i[0] == login:
                 for j in records2:
                     if j[0] == password:
-                        print('121')
+                        print('Авторизация прошла успешно')
+                        return True
         
     except sqlite3.Error as error:
         print("OUT: Ошибка при работе с БД", error)
