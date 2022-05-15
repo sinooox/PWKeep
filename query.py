@@ -93,7 +93,7 @@ def check(login, data):
             sqlite_connection.close()
             print("OUT: Соединение с БД закрыто")
 
-def auth(login, password):
+def auth(login, password, masterpassword):
     try:
         sqlite_connection = sqlite3.connect('testdb.db')
         cursor = sqlite_connection.cursor()
@@ -106,14 +106,20 @@ def auth(login, password):
         cursor.execute(sqlite_select_query2)
         records2 = cursor.fetchall()
 
+        sqlite_select_query3 = """SELECT masterpassword from registred"""
+        cursor.execute(sqlite_select_query3)
+        records3 = cursor.fetchall()
+
         cursor.close()
-        
+
         for i in records:
             if i[0] == login:
                 for j in records2:
                     if j[0] == password:
-                        print('Авторизация прошла успешно')
-                        return True
+                        for u in records3:
+                            if u[0] == masterpassword:
+                                print('Авторизация прошла успешно')
+                                return True
         
     except sqlite3.Error as error:
         print("OUT: Ошибка при работе с БД", error)

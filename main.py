@@ -18,22 +18,8 @@ def update():
     window.destroy()
     os.system('main.py')
 
-l = ttk.Label(tab2, text='Name - Login - Password')
-l.pack(anchor='w')
-
 scrollbar = ttk.Scrollbar(window)
 scrollbar.pack(side='right', fill='y')
-
-#listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
-
-#lst = q.out()
-#for i in lst:
-#    listbox.insert("end", i)
-#listbox.pack(expand=True, fill="both")
-#scrollbar.config(command=listbox.yview)
-
-refresh_button = ttk.Button(tab2, text="Refresh", command=lambda: update())
-refresh_button.pack(anchor='s')
 
 ttk.Label(tab1, text="Enter Name").grid(row=0, column=0, sticky='W', pady=35)
 ttk.Label(tab1, text="Enter Login").grid(row=1, column=0, sticky='W', pady=0)
@@ -45,6 +31,7 @@ ttk.Label(reg, text="Enter Master-Password").grid(row=2, column=0, sticky='W', p
 
 ttk.Label(auth, text="Enter Login").grid(row=0, column=0, sticky='W', pady=35)
 ttk.Label(auth, text="Enter Password").grid(row=1, column=0, sticky='W', pady=0)
+ttk.Label(auth, text="Enter Master-Password").grid(row=2, column=0, sticky='W', pady=25)
 
 tabControl.add(auth, text='Auth')
 tabControl.add(reg, text='Register')
@@ -54,12 +41,16 @@ tabControl.pack(expand=1, fill="both")
 
 auth_login = tk.StringVar()
 auth_password = tk.StringVar()
+auth_masterpassword = tk.StringVar()
 
 auth_login = ttk.Entry(auth)
 auth_login.place(relx=.5, rely=.1, anchor="c")
 
 auth_password = ttk.Entry(auth, show='*')
 auth_password.place(relx=.5, rely=.2, anchor="c")
+
+auth_masterpassword = ttk.Entry(auth, show='*')
+auth_masterpassword.place(relx=.5, rely=.3, anchor="c")
 
 reg_login = tk.StringVar()
 reg_password = tk.StringVar()
@@ -100,15 +91,15 @@ def reg_id():
 def clean(frame):
     for widget in frame.winfo_children():
         widget.destroy()
-    l = ttk.Label(tab2, text='Name - Login - Password')
+    l = ttk.Label(frame, text='Name - Login - Password')
     l.pack(anchor='w')
 
-def auth1(login, passw):
+def auth1(login, passw, mspass):
     is_authorized = False
     if is_authorized:
         return None
     else:
-        if q.auth(login, passw):
+        if q.auth(login, passw, mspass):
             is_authorized = True
             listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
             lst = q.out(f"""SELECT name, login, password FROM logpw WHERE added_by='{login}'""")
@@ -118,7 +109,7 @@ def auth1(login, passw):
             listbox.pack(expand=True, fill="both")
             scrollbar.config(command=listbox.yview)
         else:
-            print('Неверный логин или пароль')
+            print('Неверный логин, пароль или мастер-пароль')
 
 submit_button = ttk.Button(tab1, text="Submit", 
     command=lambda:q.insert(f"""INSERT INTO logpw (id, name, login, password, added_by) VALUES ('{id()}', '{name.get()}', '{login.get()}', '{password.get()}', '{auth_login.get()}');"""))
@@ -127,7 +118,7 @@ submit_button.place(relx=.5, rely=.5, anchor="c")
 reg_submit_button = ttk.Button(reg, text="Submit", command=lambda: q.check(reg_login.get(), f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
 reg_submit_button.place(relx=.5, rely=.5, anchor="c")
 
-auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: [clean(tab2), auth1(auth_login.get(), auth_password.get())])
+auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: [clean(tab2), auth1(auth_login.get(), auth_password.get(), auth_masterpassword.get())])
 auth_submit_button.place(relx=.5, rely=.5, anchor="c")
 
 window.mainloop()
