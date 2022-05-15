@@ -18,7 +18,7 @@ def update():
     window.destroy()
     os.system('main.py')
 
-l = ttk.Label(tab2, text='ID Name Login Password')
+l = ttk.Label(tab2, text='Name - Login - Password')
 l.pack(anchor='w')
 
 scrollbar = ttk.Scrollbar(window)
@@ -38,6 +38,13 @@ refresh_button.pack(anchor='s')
 ttk.Label(tab1, text="Enter Name").grid(row=0, column=0, sticky='W', pady=35)
 ttk.Label(tab1, text="Enter Login").grid(row=1, column=0, sticky='W', pady=0)
 ttk.Label(tab1, text="Enter Password").grid(row=2, column=0, sticky='W', pady=25)
+
+ttk.Label(reg, text="Enter Login").grid(row=0, column=0, sticky='W', pady=35)
+ttk.Label(reg, text="Enter Password").grid(row=1, column=0, sticky='W', pady=0)
+ttk.Label(reg, text="Enter Master-Password").grid(row=2, column=0, sticky='W', pady=25)
+
+ttk.Label(auth, text="Enter Login").grid(row=0, column=0, sticky='W', pady=35)
+ttk.Label(auth, text="Enter Password").grid(row=1, column=0, sticky='W', pady=0)
 
 tabControl.add(auth, text='Auth')
 tabControl.add(reg, text='Register')
@@ -90,15 +97,19 @@ def reg_id():
     new_id = int(prev_id[0]) + 1
     return new_id
 
+def clean(frame):
+    for widget in frame.winfo_children():
+        widget.destroy()
+    l = ttk.Label(tab2, text='Name - Login - Password')
+    l.pack(anchor='w')
+
 def auth1(login, passw):
     is_authorized = False
-
     if is_authorized:
         return None
     else:
         if q.auth(login, passw):
             is_authorized = True
-
             listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
             lst = q.out(f"""SELECT name, login, password FROM logpw WHERE added_by='{login}'""")
             print(lst)
@@ -116,7 +127,7 @@ submit_button.place(relx=.5, rely=.5, anchor="c")
 reg_submit_button = ttk.Button(reg, text="Submit", command=lambda: q.check(reg_login.get(), f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
 reg_submit_button.place(relx=.5, rely=.5, anchor="c")
 
-auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: auth1(auth_login.get(), auth_password.get()))
+auth_submit_button = ttk.Button(auth, text="Submit", command=lambda: [clean(tab2), auth1(auth_login.get(), auth_password.get())])
 auth_submit_button.place(relx=.5, rely=.5, anchor="c")
 
 window.mainloop()
