@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import query as q
-import os
+import bcrypt as b
 
 window = tk.Tk()
 window.geometry("400x500")
@@ -13,10 +13,6 @@ tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 reg = ttk.Frame(tabControl)
 auth = ttk.Frame(tabControl)
-
-def update():
-    window.destroy()
-    os.system('main.py')
 
 scrollbar = ttk.Scrollbar(window)
 scrollbar.pack(side='right', fill='y')
@@ -111,8 +107,28 @@ def auth1(login, passw, mspass):
         else:
             print('Неверный логин, пароль или мастер-пароль')
 
+def refresh(login):
+    clean(tab2)
+    listbox = tk.Listbox(tab2, yscrollcommand=scrollbar.set)
+    lst = q.out(f"""SELECT name, login, password FROM logpw WHERE added_by='{login}'""")
+    print(lst)
+    for i in lst:
+        listbox.insert("end", i)
+    listbox.pack(expand=True, fill="both")
+    scrollbar.config(command=listbox.yview)
+
+def hash(passw):
+    pass
+
+def check_hash(input_pw, exist_pw):
+    salt = bcrypt.gensalt()
+    if bcrypt.checkpw(exist_pw.encode(), input_pw):
+        return True
+    else:
+        return False
+
 submit_button = ttk.Button(tab1, text="Submit", 
-    command=lambda:q.insert(f"""INSERT INTO logpw (id, name, login, password, added_by) VALUES ('{id()}', '{name.get()}', '{login.get()}', '{password.get()}', '{auth_login.get()}');"""))
+    command=lambda: [q.insert(f"""INSERT INTO logpw (id, name, login, password, added_by) VALUES ('{id()}', '{name.get()}', '{login.get()}', '{password.get()}', '{auth_login.get()}');"""), refresh(auth_login.get())])
 submit_button.place(relx=.5, rely=.5, anchor="c")
 
 reg_submit_button = ttk.Button(reg, text="Submit", command=lambda: q.check(reg_login.get(), f"""INSERT INTO registred (id, login, password, masterpassword) VALUES ('{reg_id()}', '{reg_login.get()}', '{reg_password.get()}', '{master_password.get()}');"""))
